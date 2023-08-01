@@ -1,109 +1,6 @@
-#include <string>
-#include <vector>
-#include <algorithm>
-#include "prova.cpp"
+#include "ast.h"
 
-//Funzioni ausiliarie
-bool isOperator(std::string val)
-{
-    if(val == "+" || val == "-" || val == "*" || val == "/") return true;
-    else return false;
-}
-
-bool isFunction(std::string val)
-{
-    if(val == "sin" || val == "sqrt" || val == "cos" || val == "square") return true;
-    else return false;
-}
-
-bool isNumber(std::string val)
-{
-    return !val.empty() && std::all_of(val.begin(), val.end(), ::isdigit);
-}
-
-enum class NodeType {
-    Number,
-    BinaryOperator,
-    Function
-};
-
-// Struttura Nodo
-class ASTNode {
-public:
-    virtual ~ASTNode() {}
-    virtual NodeType getType() const = 0;
-};
-
-class NumberNode : public ASTNode {
-public:
-    NumberNode(std::string value) : value(value) {}   
-    NodeType getType() const override {return NodeType::Number; }
-
-    std::string getValue() const {return value;}
-
-private:
-    std::string value;
-
-};
-
-class BinaryOperatorNode : public ASTNode {
-public:
-    BinaryOperatorNode(std::string operazione, ASTNode * sx, ASTNode* dx)
-    : op(operazione), left(sx), right(dx) {}
-
-    NodeType getType() const override {return NodeType::BinaryOperator; }
-
-    std::string getOp() const {return op;}
-
-    ASTNode * getLeft(){
-        return left;
-    }
-
-    ASTNode * getRight(){
-        return right;
-    }
-
-private:
-    std::string op;
-    ASTNode * left;
-    ASTNode * right;
-};
-
-class FunctionNode : public ASTNode {
-public:
-    FunctionNode(std::string& nome, std::vector<ASTNode *>& args)
-    : name(nome), arguments(args) {}
-
-    NodeType getType() const override {return NodeType::Function; }
-
-    std::string getFunction() const {return name;}
-
-    std::vector<ASTNode *> getArgs() const {return arguments;}
-
-
-private:
-    std::string name;
-    std::vector<ASTNode *> arguments;
-};
-
-//Struttura Abstract Syntax Tree
-class AST {
-public:
-    AST(ASTNode * radice) : root(radice) {}
-    AST() : root(nullptr) {}
-   
-    void aggiungiNodo(ASTNode * node){
-        root = node;
-    }
-
-    void stampaNodo(){
-        stampaNodo(this->root);
-    }
-
-private:
-    ASTNode * root;
-
-    void stampaNodo(ASTNode * node){
+void AST::stampaNodo(ASTNode * node){
         if(node->getType() == NodeType::Number) {
             NumberNode * numero = static_cast<NumberNode*>(node);
             std::cout << numero->getValue();
@@ -128,21 +25,8 @@ private:
             }
         }
 
-    }
-};
-
-//FUnzioni per l'analisi sintattica
-ASTNode * parseNumber(const std::vector<std::string>& tokens, size_t &pos){
-    //size_t startPos= pos;
-    while (pos<tokens.size() && (isNumber(tokens[pos])))
-    {
-        pos ++;
-    }
-    return new NumberNode(tokens[pos]);
-    
 }
 
-ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos); //per scope
 
 ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
 
@@ -172,19 +56,13 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
     return new FunctionNode(function, args);
 }
 
-// ASTNode * parseParenthesis(const std::vector<std::string> tokens, size_t &pos){
-//     ASTNode * argSuccessivo;
-//     int openParenthesisCount = 1;
-//     pos = pos+1;
-//     argSuccessivo = parseTokens(tokens, pos);
-//     while (pos < tokens.size() && openParenthesisCount > 0) { //trova posizione della parentesi chiusa corrispondente       
-//         if(tokens[pos] == "(") openParenthesisCount++;
-//         else if(tokens[pos] == ")") {
-//             openParenthesisCount--;
-//         }
-//         pos++;
+// ASTNode * parseNumber(const std::vector<std::string>& tokens, size_t &pos){
+//     //size_t startPos= pos;
+//     while (pos<tokens.size() && (isNumber(tokens[pos])))
+//     {
+//         pos ++;
 //     }
-//     return argSuccessivo;
+//     return new NumberNode(tokens[pos]);
 // }
 
 // ASTNode * parseOperator(const std::vector<std::string>& tokens, size_t &pos){
@@ -227,20 +105,4 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
 AST* buildAST (std::vector<std::string> tokens){
     size_t pos = 0;
     return new AST(parseTokens(tokens, pos));
-}
-
-int main(int argc, char const *argv[])
-{
-    std::string str = "14 + sin(274 + sin(2392 * cos(192)) - sqrt(374 - cos(98)) - 738)";
-    std::vector<std::string> tokens = tokenizeExpression(str);
-
-    //prova
-    for (size_t i = 0; i < tokens.size(); i++)
-    {
-        std::cout << tokens[i] << std::endl;
-    }
-    
-    AST * ast = buildAST(tokens);
-    ast->stampaNodo();
-    return 0;
 }
