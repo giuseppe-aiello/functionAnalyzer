@@ -80,6 +80,7 @@ public:
 
     std::vector<ASTNode *> getArgs() const {return arguments;}
 
+
 private:
     std::string name;
     std::vector<ASTNode *> arguments;
@@ -123,9 +124,8 @@ private:
             for (size_t i = 0; i < tot; i++)
             {
                 stampaNodo(argomenti[i]);
-                //std::cout << argomenti[i] << std::endl;
+                std::cout << ")";
             }
-            std::cout << ")";
         }
 
     }
@@ -154,17 +154,21 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
     int openParenthesisCount = 1;
     pos = pos + 2;
     //std::cout << "ALLERT->" << tokens[pos] << std::endl;
+    std::vector<std::string> nestedTokens;
 
     while (pos < tokens.size() && openParenthesisCount > 0) { //trova posizione della parentesi chiusa corrispondente       
         if(tokens[pos] == "(") {openParenthesisCount++;}
         else if(tokens[pos] == ")") {
             openParenthesisCount--;
-        } else {
-            ASTNode * argomento = parseTokens(tokens, pos);
-            args.push_back(argomento);
-            }
+        } 
+        //std::cout << "TOKEN: " << tokens[pos] << std::endl;
+        nestedTokens.push_back(tokens[pos]); //Creo un sub-vector di Tokens contenente la sotto-espressione/funzione
         pos++;
     }
+    size_t pos2 = 0;
+    ASTNode * argomento = parseTokens(nestedTokens, pos2);  //
+    args.push_back(argomento);
+
     return new FunctionNode(function, args);
 }
 
@@ -227,7 +231,7 @@ AST* buildAST (std::vector<std::string> tokens){
 
 int main(int argc, char const *argv[])
 {
-    std::string str = "14 + sin(274 + sqrt(374 - cos(98)) - 738)";
+    std::string str = "14 + sin(274 + sin(2392 * cos(192)) - sqrt(374 - cos(98)) - 738)";
     std::vector<std::string> tokens = tokenizeExpression(str);
 
     //prova
