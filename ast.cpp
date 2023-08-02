@@ -17,7 +17,7 @@ void AST::stampaNodo(ASTNode * node){
             size_t tot = funzione->getArgs().size();
             std::vector<ASTNode *> argomenti = funzione->getArgs();
             //std::cout<< "\n";
-            //std::cout << "ARGOMENTI DI " << funzione->getFunction() << std::endl;
+            //std::cout << tot << " - ARGOMENTI DI " << funzione->getFunction() << std::endl;
             for (size_t i = 0; i < tot; i++)
             {
                 stampaNodo(argomenti[i]);
@@ -105,4 +105,50 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
 AST* buildAST (std::vector<std::string> tokens){
     size_t pos = 0;
     return new AST(parseTokens(tokens, pos));
+}
+
+FunctionNode* findMostNestedFunction(ASTNode * node){
+    if(node->getType() == NodeType::Function) {
+
+        ASTNode * mostNestedFunction = static_cast<FunctionNode *>(node);
+        std::vector<ASTNode *> argomenti = static_cast<FunctionNode *>(node)->getArgs();
+        for (size_t i = 0; i < argomenti.size(); i++)
+        {   
+            //std::cout <<"COSA É: " <<static_cast<BinaryOperatorNode*>(argomenti[i])->getOp() << std::endl; 
+            if(argomenti[i]->getType() == NodeType::Function) mostNestedFunction = findMostNestedFunction(argomenti[i]);
+            else if(argomenti[i]->getType() == NodeType::BinaryOperator) mostNestedFunction = findMostNestedFunction(argomenti[i]);
+        }
+        return static_cast<FunctionNode *>(mostNestedFunction);
+    }
+    if(node->getType() == NodeType::BinaryOperator){
+        BinaryOperatorNode * binaryOpNode = static_cast<BinaryOperatorNode*>(node);
+        FunctionNode* leftNestedFunction = findMostNestedFunction(binaryOpNode->getLeft());
+        FunctionNode* rightNestedFunction = findMostNestedFunction(binaryOpNode->getRight());
+        
+        return leftNestedFunction ? leftNestedFunction : rightNestedFunction;
+    }
+
+    return nullptr;
+    
+}
+
+FunctionNode* collectFunctions(ASTNode * node, std::vector<FunctionNode *>& functionList){
+    if(node->getType() == NodeType::Function){
+        FunctionNode * funzione = static_cast<FunctionNode*>(node);
+        functionList.push_back(funzione);
+
+        std::vector<ASTNode *> argomenti = static_cast<FunctionNode *>(node)->getArgs();
+        for (size_t i = 0; i < argomenti.size(); i++)
+        {   
+            if(argomenti[i]->getType() == NodeType::Function || argomenti[i]->getType() == NodeType::BinaryOperator) {
+                collectFunctions(argomenti[i], functionList);
+            }
+        }
+    }
+    if(node->getType() == NodeType::BinaryOperator){
+        BinaryOperatorNode * operatore = static_cast<BinaryOperatorNode*>(node);
+        collectFunctions(operatore->getLeft(), functionList);
+        collectFunctions(operatore->getRight(), functionList);
+    }
+
 }
