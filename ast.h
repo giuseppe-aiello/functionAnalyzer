@@ -82,6 +82,10 @@ public:
         stampaNodo(this->root);
     }
 
+    ASTNode * getRoot(){
+        return this->root;
+    }
+
 private:
     ASTNode * root;
 
@@ -95,5 +99,9 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos);
 ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos);
 
 AST* buildAST (std::vector<std::string> tokens);
+
+FunctionNode* findMostNestedFunction(ASTNode * node);
+
+FunctionNode* collectFunctions(ASTNode * root, std::vector<FunctionNode *>& functionList);
 
 #endif
