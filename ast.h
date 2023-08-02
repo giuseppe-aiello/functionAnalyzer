@@ -68,6 +68,8 @@ private:
     std::vector<ASTNode *> arguments;
 };
 
+void printNode(ASTNode * node);
+
 //Struttura Abstract Syntax Tree
 class AST {
 public:
@@ -78,18 +80,19 @@ public:
         root = node;
     }
 
-    void stampaNodo(){
-        stampaNodo(this->root);
+    void printAST(){
+        printNode(this->root);
     }
 
     ASTNode * getRoot(){
         return this->root;
     }
 
+    //friend void printNode(ASTNode * node);
+
 private:
     ASTNode * root;
 
-    void stampaNodo(ASTNode * node);
 };
 
 //FUnzioni per l'analisi sintattica

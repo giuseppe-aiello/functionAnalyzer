@@ -1,15 +1,15 @@
 #include "ast.h"
 
-void AST::stampaNodo(ASTNode * node){
+void printNode(ASTNode * node){
         if(node->getType() == NodeType::Number) {
             NumberNode * numero = static_cast<NumberNode*>(node);
             std::cout << numero->getValue();
         } else if (node->getType() == NodeType::BinaryOperator) {
             BinaryOperatorNode * operatore = static_cast<BinaryOperatorNode*>(node);
             std::cout << ""; //parentesi
-            stampaNodo(operatore->getLeft());
+            printNode(operatore->getLeft());
             std::cout << " " << operatore->getOp() << " ";
-            stampaNodo(operatore->getRight());
+            printNode(operatore->getRight());
             std::cout << "";
         } else if (node->getType() == NodeType::Function) {
             FunctionNode* funzione = static_cast<FunctionNode*>(node);
@@ -20,7 +20,7 @@ void AST::stampaNodo(ASTNode * node){
             //std::cout << tot << " - ARGOMENTI DI " << funzione->getFunction() << std::endl;
             for (size_t i = 0; i < tot; i++)
             {
-                stampaNodo(argomenti[i]);
+                printNode(argomenti[i]);
                 std::cout << ")";
             }
         }

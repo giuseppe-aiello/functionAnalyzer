@@ -13,17 +13,26 @@ int main(int argc, char const *argv[])
     }
     
     AST * ast = buildAST(tokens);
-    ast->stampaNodo();
+    ast->printAST();
 
     FunctionNode* mostNestedFunction = findMostNestedFunction(ast->getRoot());
-    std::cout << "\nLa funzione più annidata è: " << mostNestedFunction->getFunction() << std::endl;
+    std::cout << "\nLa funzione più annidata è: " << mostNestedFunction->getFunction();
+    std::cout << "(";
+    for (size_t i = 0; i < mostNestedFunction->getArgs().size(); i++)
+    {
+        printNode(mostNestedFunction->getArgs()[i]);
+    }
+    std::cout << ")" << std::endl;
 
     std::vector<FunctionNode*> functionsInOrder;
     collectFunctions(ast->getRoot(), functionsInOrder);
     std::reverse(functionsInOrder.begin(), functionsInOrder.end());
+    
     std::cout << "Funzioni nell'ordine dall'interno verso l'esterno:" << std::endl;
     for(const auto& function : functionsInOrder){
-        std::cout << function->getFunction() << std::endl;
+        std::cout << function->getFunction() << "(";
+        printNode(function->getArgs()[0]);
+        std::cout << ")" << std::endl;
     }
 
 
