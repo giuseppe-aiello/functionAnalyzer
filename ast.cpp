@@ -83,6 +83,7 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
         pos++;
     } else if(isFunction(token)){
         leftOperand = parseFunction(tokens, pos);
+        //pos++;
     } 
     // else if(isOperator(token)){
     //     std::cout << "ALLERTA" << std::endl;
@@ -132,12 +133,12 @@ FunctionNode* findMostNestedFunction(ASTNode * node){
     
 }
 
-FunctionNode* collectFunctions(ASTNode * node, std::vector<FunctionNode *>& functionList){
+void collectFunctions(ASTNode * node, std::vector<FunctionNode *>& functionList){
     if(node->getType() == NodeType::Function){
         FunctionNode * funzione = static_cast<FunctionNode*>(node);
         functionList.push_back(funzione);
 
-        std::vector<ASTNode *> argomenti = static_cast<FunctionNode *>(node)->getArgs();
+        std::vector<ASTNode *> argomenti = funzione->getArgs();
         for (size_t i = 0; i < argomenti.size(); i++)
         {   
             if(argomenti[i]->getType() == NodeType::Function || argomenti[i]->getType() == NodeType::BinaryOperator) {

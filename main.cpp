@@ -3,7 +3,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string str = "14 + sin(274 - sqrt(374 - cos(98 - sin(sqrt(382 + square(1992)) - cos(129)))) - 738)";
+    std::string str = "14 + sin(274 - sqrt(374 - cos(129)) - 738) - 40 +3 - sqrt(329)";
     std::vector<std::string> tokens = tokenizeExpression(str);
 
     //prova
@@ -27,15 +27,13 @@ int main(int argc, char const *argv[])
     std::vector<FunctionNode*> functionsInOrder;
     collectFunctions(ast->getRoot(), functionsInOrder);
     std::reverse(functionsInOrder.begin(), functionsInOrder.end());
-    
+
     std::cout << "Funzioni nell'ordine dall'interno verso l'esterno:" << std::endl;
     for(const auto& function : functionsInOrder){
         std::cout << function->getFunction() << "(";
         printNode(function->getArgs()[0]);
         std::cout << ")" << std::endl;
     }
-
-
 
     return 0;
 }

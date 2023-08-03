@@ -105,6 +105,6 @@ AST* buildAST (std::vector<std::string> tokens);
 
 FunctionNode* findMostNestedFunction(ASTNode * node);
 
-FunctionNode* collectFunctions(ASTNode * root, std::vector<FunctionNode *>& functionList);
+void collectFunctions(ASTNode * root, std::vector<FunctionNode *>& functionList);
 
 #endif
