@@ -20,12 +20,15 @@ void printNode(ASTNode * node){
             //std::cout << tot << " - ARGOMENTI DI " << funzione->getFunction() << std::endl;
             for (size_t i = 0; i < tot; i++)
             {
+                if(i>=1) std::cout << ",";
                 printNode(argomenti[i]);
-                std::cout << ")";
             }
+            std::cout << ")";
+
         }
 
 }
+
 
 
 ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
@@ -40,7 +43,7 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
     //std::cout << "ALLERT->" << tokens[pos] << std::endl;
     std::vector<std::string> nestedTokens;
 
-    while (pos < tokens.size() && openParenthesisCount > 0) { //trova posizione della parentesi chiusa corrispondente       
+    while (pos < tokens.size() && openParenthesisCount>0) { //trova posizione della parentesi chiusa corrispondente
         if(tokens[pos] == "(") {openParenthesisCount++;}
         else if(tokens[pos] == ")") {
             openParenthesisCount--;
@@ -48,14 +51,77 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
         //std::cout << "TOKEN: " << tokens[pos] << std::endl;
         nestedTokens.push_back(tokens[pos]); //Creo un sub-vector di Tokens contenente la sotto-espressione/funzione
         pos++;
-    }
-    size_t pos2 = 0;
-    ASTNode * argomento = parseTokens(nestedTokens, pos2);  //
-    args.push_back(argomento);
 
+    }
+
+    //CASO 2 ARGOMENTI (BASE ED ESPONENTE)
+    if(getIndex(nestedTokens, ",")!=-1){
+
+        size_t totArgs = std::count(nestedTokens.begin(), nestedTokens.end(), ",");
+        ASTNode ** ASTNodeArgs = parseMultipleArgs(nestedTokens, totArgs+1);
+        // size_t pos2 = 0;
+        // std::vector<std::string> argumentZero; //base
+
+        // while (pos2 < nestedTokens.size() && nestedTokens[pos2]!=",") {
+        //     argumentZero.push_back(nestedTokens[pos2]);
+        //     pos2++;
+        // }
+
+        // size_t pos3 = 0;
+        // ASTNode * arg0 = parseTokens(argumentZero, pos3);
+
+        // pos2+=1;
+        // std::vector<std::string> argumentOne; //base
+        // while (pos2 < nestedTokens.size()-1) {
+        //     argumentOne.push_back(nestedTokens[pos2]);
+        //     pos2++;
+        // }
+
+        // size_t pos4 = 0;
+        // ASTNode * arg1 = parseTokens(argumentOne, pos4);
+        // args.push_back(arg0);
+        // args.push_back(arg1);
+
+        for (size_t i = 0; i < totArgs+1; i++)
+        {
+            args.push_back(ASTNodeArgs[i]);
+        }
+        
+    }else {
+        size_t pos5 = 0;
+        ASTNode * argomento = parseTokens(nestedTokens, pos5);  //
+        args.push_back(argomento);
+    }
     return new FunctionNode(function, args);
 }
 
+ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs){
+        //std::cout << "ALLERT" << std::endl;
+
+    ASTNode ** ASTNodeArgs;
+    ASTNodeArgs = new ASTNode * [totArgs];
+    size_t pos = 0;
+    std::vector<std::string> singleArg;
+
+    for (size_t i = 0; i <totArgs; i++)
+    {
+        singleArg.clear();
+        while (pos < tokensArgs.size() && tokensArgs[pos]!=",")
+        {
+
+            singleArg.push_back(tokensArgs[pos]);
+            pos++;
+        }
+
+        size_t newPos=0;
+        ASTNodeArgs[i] = parseTokens(singleArg, newPos);
+        pos++;
+
+    }
+
+    return ASTNodeArgs;
+    
+}
 // ASTNode * parseNumber(const std::vector<std::string>& tokens, size_t &pos){
 //     //size_t startPos= pos;
 //     while (pos<tokens.size() && (isNumber(tokens[pos])))
@@ -152,4 +218,21 @@ void collectFunctions(ASTNode * node, std::vector<FunctionNode *>& functionList)
         collectFunctions(operatore->getRight(), functionList);
     }
 
+}
+
+int getIndex(std::vector<std::string> v, std::string K)
+{
+    auto it = find(v.begin(), v.end(), K);
+
+    // If element was found
+    if (it != v.end())
+    {
+        int index = it - v.begin();
+        return index;
+    }
+    else {
+        // If the element is not
+        // present in the vector
+        return -1;
+    }
 }

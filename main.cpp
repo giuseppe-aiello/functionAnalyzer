@@ -3,7 +3,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string str = "14 + sin(274 - sqrt(374 - cos(129)) - 738) - 40 +3 - sqrt(329)";
+    std::string str = "14 + sin(274 - sqrt(374 - cos(129)) - 738) - 40 +3 - sqrt(2 , 329 +29383 ,  33834848)";
     std::vector<std::string> tokens = tokenizeExpression(str);
 
     //prova
@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
     
     AST * ast = buildAST(tokens);
     ast->printAST();
-
+    /*
     FunctionNode* mostNestedFunction = findMostNestedFunction(ast->getRoot());
     std::cout << "\nLa funzione più annidata è: " << mostNestedFunction->getFunction();
     std::cout << "(";
@@ -34,6 +34,6 @@ int main(int argc, char const *argv[])
         printNode(function->getArgs()[0]);
         std::cout << ")" << std::endl;
     }
-
+*/
     return 0;
 }

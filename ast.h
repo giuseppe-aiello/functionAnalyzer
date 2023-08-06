@@ -97,6 +97,10 @@ private:
 
 //FUnzioni per l'analisi sintattica
 
+ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs);
+
+int getIndex(std::vector<std::string> v, std::string K);
+
 ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos);
 
 ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos);
