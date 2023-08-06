@@ -20,7 +20,7 @@ void printNode(ASTNode * node){
             //std::cout << tot << " - ARGOMENTI DI " << funzione->getFunction() << std::endl;
             for (size_t i = 0; i < tot; i++)
             {
-                if(i>=1) std::cout << ",";
+                if(i>=1) std::cout << " , ";
                 printNode(argomenti[i]);
             }
             std::cout << ")";
@@ -54,33 +54,11 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
 
     }
 
-    //CASO 2 ARGOMENTI (BASE ED ESPONENTE)
+    //CASO più ARGOMENTI (BASE ED ESPONENTE)
     if(getIndex(nestedTokens, ",")!=-1){
 
         size_t totArgs = std::count(nestedTokens.begin(), nestedTokens.end(), ",");
         ASTNode ** ASTNodeArgs = parseMultipleArgs(nestedTokens, totArgs+1);
-        // size_t pos2 = 0;
-        // std::vector<std::string> argumentZero; //base
-
-        // while (pos2 < nestedTokens.size() && nestedTokens[pos2]!=",") {
-        //     argumentZero.push_back(nestedTokens[pos2]);
-        //     pos2++;
-        // }
-
-        // size_t pos3 = 0;
-        // ASTNode * arg0 = parseTokens(argumentZero, pos3);
-
-        // pos2+=1;
-        // std::vector<std::string> argumentOne; //base
-        // while (pos2 < nestedTokens.size()-1) {
-        //     argumentOne.push_back(nestedTokens[pos2]);
-        //     pos2++;
-        // }
-
-        // size_t pos4 = 0;
-        // ASTNode * arg1 = parseTokens(argumentOne, pos4);
-        // args.push_back(arg0);
-        // args.push_back(arg1);
 
         for (size_t i = 0; i < totArgs+1; i++)
         {
