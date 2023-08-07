@@ -95,7 +95,6 @@ private:
 
 };
 
-//FUnzioni per l'analisi sintattica
 
 ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs);
 

@@ -79,6 +79,7 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
     ASTNode ** ASTNodeArgs;
     ASTNodeArgs = new ASTNode * [totArgs];
     size_t pos = 0;
+    //size_t found = 0;
     std::vector<std::string> singleArg;
 
     for (size_t i = 0; i <totArgs; i++)
@@ -86,11 +87,19 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
         singleArg.clear();
         while (pos < tokensArgs.size() && tokensArgs[pos]!=",")
         {
-
+            if(isFunction(tokensArgs[pos])){
+                pos += 2;
+                int openParenthesisCount = 1;
+                while (pos < tokensArgs.size() && openParenthesisCount>0) { //trova posizione della parentesi chiusa corrispondente
+                    if(tokensArgs[pos] == "(") {openParenthesisCount++;}
+                    else if(tokensArgs[pos] == ")") openParenthesisCount--; 
+                    pos++;
+                }
+            }
+            
             singleArg.push_back(tokensArgs[pos]);
             pos++;
         }
-
         size_t newPos=0;
         ASTNodeArgs[i] = parseTokens(singleArg, newPos);
         pos++;
