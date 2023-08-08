@@ -1,4 +1,0 @@
-[submodule "functionAnalyzer"]
-	branch = main
-[submodule "functionAnalyzer/"]
-	branch = main
