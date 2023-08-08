@@ -51,35 +51,54 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
         //std::cout << "TOKEN: " << tokens[pos] << std::endl;
         nestedTokens.push_back(tokens[pos]); //Creo un sub-vector di Tokens contenente la sotto-espressione/funzione
         pos++;
-
     }
 
     //CASO più ARGOMENTI (BASE ED ESPONENTE)
     if(getIndex(nestedTokens, ",")!=-1){
 
-        size_t totArgs = std::count(nestedTokens.begin(), nestedTokens.end(), ",");
-        ASTNode ** ASTNodeArgs = parseMultipleArgs(nestedTokens, totArgs+1);
+        size_t totArgs = 0; //= std::count(nestedTokens.begin(), nestedTokens.end(), ",");
+        size_t tempPos = 0;
 
-        for (size_t i = 0; i < totArgs+1; i++)
+        while(tempPos < nestedTokens.size()){
+            if(nestedTokens[tempPos]==","){
+                totArgs++;
+            }
+            else if(isFunction(nestedTokens[tempPos])){
+                openParenthesisCount = 1;
+                tempPos +=2;
+                while (tempPos < nestedTokens.size() && openParenthesisCount>0) {
+                    if(nestedTokens[tempPos] == "(") openParenthesisCount++;
+                    else if(nestedTokens[tempPos] == ")") openParenthesisCount--;
+                    tempPos++;
+                }
+                if (tempPos < nestedTokens.size() && nestedTokens[tempPos] == ",") {
+                    totArgs++; // Conta l'argomento dopo la funzione nidificata
+                }
+            }
+            tempPos++;
+        }
+        totArgs+=1;
+
+        ASTNode ** ASTNodeArgs = parseMultipleArgs(nestedTokens, (totArgs));
+
+        for (size_t i = 0; i < totArgs; i++)
         {
             args.push_back(ASTNodeArgs[i]);
         }
         
     }else {
         size_t pos5 = 0;
-        ASTNode * argomento = parseTokens(nestedTokens, pos5);  //
+        ASTNode * argomento = parseTokens(nestedTokens, pos5);
         args.push_back(argomento);
     }
     return new FunctionNode(function, args);
 }
 
 ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs){
-        //std::cout << "ALLERT" << std::endl;
 
     ASTNode ** ASTNodeArgs;
     ASTNodeArgs = new ASTNode * [totArgs];
     size_t pos = 0;
-    //size_t found = 0;
     std::vector<std::string> singleArg;
 
     for (size_t i = 0; i <totArgs; i++)
@@ -88,26 +107,26 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
         while (pos < tokensArgs.size() && tokensArgs[pos]!=",")
         {
             if(isFunction(tokensArgs[pos])){
-                pos += 2;
+                singleArg.push_back(tokensArgs[pos]);
+                pos++;
+                singleArg.push_back(tokensArgs[pos]);
+                pos++;
                 int openParenthesisCount = 1;
                 while (pos < tokensArgs.size() && openParenthesisCount>0) { //trova posizione della parentesi chiusa corrispondente
-                    if(tokensArgs[pos] == "(") {openParenthesisCount++;}
-                    else if(tokensArgs[pos] == ")") openParenthesisCount--; 
+                    if(tokensArgs[pos] == "(") openParenthesisCount++;
+                    else if(tokensArgs[pos] == ")") openParenthesisCount--;
+                    singleArg.push_back(tokensArgs[pos]);
                     pos++;
                 }
             }
-            
             singleArg.push_back(tokensArgs[pos]);
             pos++;
         }
         size_t newPos=0;
         ASTNodeArgs[i] = parseTokens(singleArg, newPos);
         pos++;
-
     }
-
     return ASTNodeArgs;
-    
 }
 // ASTNode * parseNumber(const std::vector<std::string>& tokens, size_t &pos){
 //     //size_t startPos= pos;
@@ -224,6 +243,3 @@ int getIndex(std::vector<std::string> v, std::string K)
     }
 }
 
-//CICCIO
-///shshs
-//CICCIOLONE
