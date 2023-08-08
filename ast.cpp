@@ -140,6 +140,9 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
     } else if(isFunction(token)){
         leftOperand = parseFunction(tokens, pos);
         //pos++;
+    } else if(isPolynomial(token)){
+        leftOperand = new NumberNode(token);
+        pos++;
     }
     // else if(isOperator(token)){
     //     std::cout << "ALLERTA" << std::endl;

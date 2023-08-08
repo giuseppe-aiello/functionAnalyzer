@@ -6,6 +6,7 @@
 #include <vector>
 #include <stack>
 #include <algorithm>
+#include <regex>
 
 bool isOperator(char ch);
 
@@ -15,4 +16,5 @@ bool isFunction(std::string val);
 
 bool isNumber(std::string val);
 
+bool isPolynomial(std::string val);
 #endif
