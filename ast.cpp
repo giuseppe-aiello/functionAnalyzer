@@ -128,23 +128,7 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
     }
     return ASTNodeArgs;
 }
-// ASTNode * parseNumber(const std::vector<std::string>& tokens, size_t &pos){
-//     //size_t startPos= pos;
-//     while (pos<tokens.size() && (isNumber(tokens[pos])))
-//     {
-//         pos ++;
-//     }
-//     return new NumberNode(tokens[pos]);
-// }
 
-// ASTNode * parseOperator(const std::vector<std::string>& tokens, size_t &pos){
-//     size_t startPos= pos;
-//     while (pos<tokens.size() && (isOperator(tokens[pos])))
-//     {
-//         pos ++;
-//     }
-//     return new BinaryOperatorNode(tokens[pos]);
-// }
 
 ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
 
@@ -242,7 +226,3 @@ int getIndex(std::vector<std::string> v, std::string K)
         return -1;
     }
 }
-
-//CICCIO
-///shshs
-//CICCIOLONE
