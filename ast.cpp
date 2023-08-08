@@ -1,31 +1,31 @@
 #include "ast.h"
 
 void printNode(ASTNode * node){
-        if(node->getType() == NodeType::Number) {
-            NumberNode * numero = static_cast<NumberNode*>(node);
-            std::cout << numero->getValue();
-        } else if (node->getType() == NodeType::BinaryOperator) {
-            BinaryOperatorNode * operatore = static_cast<BinaryOperatorNode*>(node);
-            std::cout << ""; //parentesi
-            printNode(operatore->getLeft());
-            std::cout << " " << operatore->getOp() << " ";
-            printNode(operatore->getRight());
-            std::cout << "";
-        } else if (node->getType() == NodeType::Function) {
-            FunctionNode* funzione = static_cast<FunctionNode*>(node);
-            std::cout << funzione->getFunction() << "(";
-            size_t tot = funzione->getArgs().size();
-            std::vector<ASTNode *> argomenti = funzione->getArgs();
-            //std::cout<< "\n";
-            //std::cout << tot << " - ARGOMENTI DI " << funzione->getFunction() << std::endl;
-            for (size_t i = 0; i < tot; i++)
-            {
-                if(i>=1) std::cout << " , ";
-                printNode(argomenti[i]);
-            }
-            std::cout << ")";
-
+    if(node->getType() == NodeType::Number) {
+        NumberNode * numero = static_cast<NumberNode*>(node);
+        std::cout << numero->getValue();
+    } else if (node->getType() == NodeType::BinaryOperator) {
+        BinaryOperatorNode * operatore = static_cast<BinaryOperatorNode*>(node);
+        std::cout << ""; //parentesi
+        printNode(operatore->getLeft());
+        std::cout << " " << operatore->getOp() << " ";
+        printNode(operatore->getRight());
+        std::cout << "";
+    } else if (node->getType() == NodeType::Function) {
+        FunctionNode* funzione = static_cast<FunctionNode*>(node);
+        std::cout << funzione->getFunction() << "(";
+        size_t tot = funzione->getArgs().size();
+        std::vector<ASTNode *> argomenti = funzione->getArgs();
+        //std::cout<< "\n";
+        //std::cout << tot << " - ARGOMENTI DI " << funzione->getFunction() << std::endl;
+        for (size_t i = 0; i < tot; i++)
+        {
+            if(i>=1) std::cout << " , ";
+            printNode(argomenti[i]);
         }
+        std::cout << ")";
+
+    }
 
 }
 
@@ -47,39 +47,58 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
         if(tokens[pos] == "(") {openParenthesisCount++;}
         else if(tokens[pos] == ")") {
             openParenthesisCount--;
-        } 
+        }
         //std::cout << "TOKEN: " << tokens[pos] << std::endl;
         nestedTokens.push_back(tokens[pos]); //Creo un sub-vector di Tokens contenente la sotto-espressione/funzione
         pos++;
-
     }
 
     //CASO più ARGOMENTI (BASE ED ESPONENTE)
     if(getIndex(nestedTokens, ",")!=-1){
 
-        size_t totArgs = std::count(nestedTokens.begin(), nestedTokens.end(), ",");
-        ASTNode ** ASTNodeArgs = parseMultipleArgs(nestedTokens, totArgs+1);
+        size_t totArgs = 0; //= std::count(nestedTokens.begin(), nestedTokens.end(), ",");
+        size_t tempPos = 0;
 
-        for (size_t i = 0; i < totArgs+1; i++)
+        while(tempPos < nestedTokens.size()){
+            if(nestedTokens[tempPos]==","){
+                totArgs++;
+            }
+            else if(isFunction(nestedTokens[tempPos])){
+                openParenthesisCount = 1;
+                tempPos +=2;
+                while (tempPos < nestedTokens.size() && openParenthesisCount>0) {
+                    if(nestedTokens[tempPos] == "(") openParenthesisCount++;
+                    else if(nestedTokens[tempPos] == ")") openParenthesisCount--;
+                    tempPos++;
+                }
+                if (tempPos < nestedTokens.size() && nestedTokens[tempPos] == ",") {
+                    totArgs++; // Conta l'argomento dopo la funzione nidificata
+                }
+            }
+            tempPos++;
+        }
+        totArgs+=1;
+
+        ASTNode ** ASTNodeArgs = parseMultipleArgs(nestedTokens, (totArgs));
+
+        for (size_t i = 0; i < totArgs; i++)
         {
             args.push_back(ASTNodeArgs[i]);
         }
-        
+
     }else {
         size_t pos5 = 0;
-        ASTNode * argomento = parseTokens(nestedTokens, pos5);  //
+        ASTNode * argomento = parseTokens(nestedTokens, pos5);
         args.push_back(argomento);
     }
     return new FunctionNode(function, args);
 }
 
 ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs){
-        //std::cout << "ALLERT" << std::endl;
 
     ASTNode ** ASTNodeArgs;
     ASTNodeArgs = new ASTNode * [totArgs];
     size_t pos = 0;
-    //size_t found = 0;
     std::vector<std::string> singleArg;
 
     for (size_t i = 0; i <totArgs; i++)
@@ -88,26 +107,26 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
         while (pos < tokensArgs.size() && tokensArgs[pos]!=",")
         {
             if(isFunction(tokensArgs[pos])){
-                pos += 2;
+                singleArg.push_back(tokensArgs[pos]);
+                pos++;
+                singleArg.push_back(tokensArgs[pos]);
+                pos++;
                 int openParenthesisCount = 1;
                 while (pos < tokensArgs.size() && openParenthesisCount>0) { //trova posizione della parentesi chiusa corrispondente
-                    if(tokensArgs[pos] == "(") {openParenthesisCount++;}
-                    else if(tokensArgs[pos] == ")") openParenthesisCount--; 
+                    if(tokensArgs[pos] == "(") openParenthesisCount++;
+                    else if(tokensArgs[pos] == ")") openParenthesisCount--;
+                    singleArg.push_back(tokensArgs[pos]);
                     pos++;
                 }
             }
-            
             singleArg.push_back(tokensArgs[pos]);
             pos++;
         }
         size_t newPos=0;
         ASTNodeArgs[i] = parseTokens(singleArg, newPos);
         pos++;
-
     }
-
     return ASTNodeArgs;
-    
 }
 // ASTNode * parseNumber(const std::vector<std::string>& tokens, size_t &pos){
 //     //size_t startPos= pos;
@@ -137,12 +156,12 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
     } else if(isFunction(token)){
         leftOperand = parseFunction(tokens, pos);
         //pos++;
-    } 
+    }
     // else if(isOperator(token)){
     //     std::cout << "ALLERTA" << std::endl;
     //     leftOperand = new NumberNode(token);
     //     pos++;
-    // } 
+    // }
     // else if(token == "("){
     //     leftOperand = parseParenthesis(tokens, pos);
     // }
@@ -154,7 +173,7 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
         leftOperand = new BinaryOperatorNode(op, leftOperand, rightOperand);
     }
     return leftOperand;
-} 
+}
 
 AST* buildAST (std::vector<std::string> tokens){
     size_t pos = 0;
@@ -167,8 +186,8 @@ FunctionNode* findMostNestedFunction(ASTNode * node){
         ASTNode * mostNestedFunction = static_cast<FunctionNode *>(node);
         std::vector<ASTNode *> argomenti = static_cast<FunctionNode *>(node)->getArgs();
         for (size_t i = 0; i < argomenti.size(); i++)
-        {   
-            //std::cout <<"COSA É: " <<static_cast<BinaryOperatorNode*>(argomenti[i])->getOp() << std::endl; 
+        {
+            //std::cout <<"COSA É: " <<static_cast<BinaryOperatorNode*>(argomenti[i])->getOp() << std::endl;
             if(argomenti[i]->getType() == NodeType::Function) mostNestedFunction = findMostNestedFunction(argomenti[i]);
             else if(argomenti[i]->getType() == NodeType::BinaryOperator) mostNestedFunction = findMostNestedFunction(argomenti[i]);
         }
@@ -178,12 +197,12 @@ FunctionNode* findMostNestedFunction(ASTNode * node){
         BinaryOperatorNode * binaryOpNode = static_cast<BinaryOperatorNode*>(node);
         FunctionNode* leftNestedFunction = findMostNestedFunction(binaryOpNode->getLeft());
         FunctionNode* rightNestedFunction = findMostNestedFunction(binaryOpNode->getRight());
-        
+
         return leftNestedFunction ? leftNestedFunction : rightNestedFunction;
     }
 
     return nullptr;
-    
+
 }
 
 void collectFunctions(ASTNode * node, std::vector<FunctionNode *>& functionList){
@@ -193,7 +212,7 @@ void collectFunctions(ASTNode * node, std::vector<FunctionNode *>& functionList)
 
         std::vector<ASTNode *> argomenti = funzione->getArgs();
         for (size_t i = 0; i < argomenti.size(); i++)
-        {   
+        {
             if(argomenti[i]->getType() == NodeType::Function || argomenti[i]->getType() == NodeType::BinaryOperator) {
                 collectFunctions(argomenti[i], functionList);
             }
@@ -223,7 +242,3 @@ int getIndex(std::vector<std::string> v, std::string K)
         return -1;
     }
 }
-
-//CICCIO
-///shshs
-//CICCIOLONE
