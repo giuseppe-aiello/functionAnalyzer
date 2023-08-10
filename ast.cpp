@@ -39,10 +39,10 @@ ASTNode * parseFunction(const std::vector<std::string> tokens, size_t &pos){
     //std::cout << "ARGOMENTI DI " << function << std::endl;
 
     int openParenthesisCount = 1;
+
     pos = pos + 2;
     //std::cout << "ALLERT->" << tokens[pos] << std::endl;
     std::vector<std::string> nestedTokens;
-
     while (pos < tokens.size() && openParenthesisCount>0) { //trova posizione della parentesi chiusa corrispondente
         if(tokens[pos] == "(") {openParenthesisCount++;}
         else if(tokens[pos] == ")") {
@@ -99,11 +99,10 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
     ASTNode ** ASTNodeArgs;
     ASTNodeArgs = new ASTNode * [totArgs];
     size_t pos = 0;
-    std::vector<std::string> singleArg;
 
     for (size_t i = 0; i <totArgs; i++)
     {
-        singleArg.clear();
+        std::vector<std::string> singleArg;
         while (pos < tokensArgs.size() && tokensArgs[pos]!=",")
         {
             if(isFunction(tokensArgs[pos])){
@@ -118,9 +117,10 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
                     singleArg.push_back(tokensArgs[pos]);
                     pos++;
                 }
-            }
+            }else{
             singleArg.push_back(tokensArgs[pos]);
             pos++;
+            }
         }
         size_t newPos=0;
         ASTNodeArgs[i] = parseTokens(singleArg, newPos);
@@ -133,7 +133,7 @@ ASTNode ** parseMultipleArgs(std::vector<std::string> tokensArgs, size_t totArgs
 ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
 
     std::string token = tokens[pos];
-    ASTNode * leftOperand;
+    ASTNode * leftOperand = nullptr;
     if(isNumber(token)){
         leftOperand= new NumberNode(token);
         pos++;
@@ -144,14 +144,6 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
         leftOperand = new NumberNode(token);
         pos++;
     }
-    // else if(isOperator(token)){
-    //     std::cout << "ALLERTA" << std::endl;
-    //     leftOperand = new NumberNode(token);
-    //     pos++;
-    // }
-    // else if(token == "("){
-    //     leftOperand = parseParenthesis(tokens, pos);
-    // }
 
     while (pos < tokens.size() && isOperator(tokens[pos]))
     {
