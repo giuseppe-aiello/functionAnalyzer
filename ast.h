@@ -18,7 +18,9 @@ public:
 
 class NumberNode : public ASTNode {
 public:
-    NumberNode(std::string value) : value(value) {}   
+    NumberNode(std::string value) : value(value) {}
+    ~NumberNode() override {}
+
     NodeType getType() const override {return NodeType::Number; }
 
     std::string getValue() const {return value;}
@@ -32,6 +34,11 @@ class BinaryOperatorNode : public ASTNode {
 public:
     BinaryOperatorNode(std::string operazione, ASTNode * sx, ASTNode* dx)
     : op(operazione), left(sx), right(dx) {}
+
+    ~BinaryOperatorNode() override {
+        delete left;
+        delete right;
+    }
 
     NodeType getType() const override {return NodeType::BinaryOperator; }
 
@@ -56,6 +63,12 @@ public:
     FunctionNode(std::string& nome, std::vector<ASTNode *>& args)
     : name(nome), arguments(args) {}
 
+    ~FunctionNode() override {
+        for(size_t i=0; i<this->arguments.size(); i++){
+            delete arguments[i];
+        }
+    }
+
     NodeType getType() const override {return NodeType::Function; }
 
     std::string getFunction() const {return name;}
@@ -75,6 +88,9 @@ class AST {
 public:
     AST(ASTNode * radice) : root(radice) {}
     AST() : root(nullptr) {}
+    ~AST() {
+        delete root;
+    }
    
     void aggiungiNodo(ASTNode * node){
         root = node;
