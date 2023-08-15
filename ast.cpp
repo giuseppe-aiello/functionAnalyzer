@@ -25,6 +25,12 @@ void printNode(ASTNode * node){
         }
         std::cout << ")";
 
+    } else if(node->getType()==NodeType::Polynomial){
+        PolynomialNode * polinomio = static_cast<PolynomialNode*>(node);
+        std::cout << polinomio->getValue();
+    } else if(node->getType()==NodeType::GenericString){
+        GenericStringNode * stringa_generica = static_cast<GenericStringNode*>(node);
+        std::cout << stringa_generica->getValue();
     }
 
 }
@@ -141,7 +147,10 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
         leftOperand = parseFunction(tokens, pos);
         //pos++;
     } else if(isPolynomial(token)){
-        leftOperand = new NumberNode(token);
+        leftOperand = new PolynomialNode(token);
+        pos++;
+    } else {
+        leftOperand = new GenericStringNode(token);
         pos++;
     }
 

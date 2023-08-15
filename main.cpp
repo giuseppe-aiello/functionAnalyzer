@@ -3,7 +3,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string str = "14 + sin(274 - sqrt(374 - cos(129)) - 738) - 40 +3 - sqrt(2 , sqrt(329 +29383 - sqrt(9339 + sqrt(3939))))";
+    std::string str = "14 + sin(274 - sqrt(374x^2 - cos(129x)) - 738 - EILA) - 40 +3 - sqrt(2 , sqrt(329 +29383 - sqrt(9339 + sqrt(3939 + ciao))))";
     std::vector<std::string> tokens = tokenizeExpression(str);
 
     //prova

@@ -6,7 +6,9 @@
 enum class NodeType {
     Number,
     BinaryOperator,
-    Function
+    Function,
+    Polynomial,
+    GenericString
 };
 
 // Struttura Nodo
@@ -79,6 +81,34 @@ public:
 private:
     std::string name;
     std::vector<ASTNode *> arguments;
+};
+
+class PolynomialNode : public ASTNode {
+public:
+    PolynomialNode(std::string value) : value(value) {}
+    ~PolynomialNode() override {}
+
+    NodeType getType() const override {return NodeType::Polynomial; }
+
+    std::string getValue() const {return value;}
+
+private:
+    std::string value;
+
+};
+
+class GenericStringNode : public ASTNode {
+public:
+    GenericStringNode(std::string value) : value(value) {}
+    ~GenericStringNode() override {}
+
+    NodeType getType() const override {return NodeType::GenericString; }
+
+    std::string getValue() const {return value;}
+
+private:
+    std::string value;
+
 };
 
 void printNode(ASTNode * node);

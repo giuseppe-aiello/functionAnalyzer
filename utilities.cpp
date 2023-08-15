@@ -25,7 +25,8 @@ bool isNumber(std::string val)
 }
 
 bool isPolynomial(std::string val){
-    std::regex polyPattern("([0-9]*)x");
+    std::regex polyPattern(R"((\d+x\^\d+)|([0-9]*)x)");
+    
     if(!std::regex_match(val, polyPattern)){
         return false;
     } else return true;
