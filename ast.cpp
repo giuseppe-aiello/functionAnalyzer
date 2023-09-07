@@ -1,5 +1,6 @@
 #include "ast.h"
 
+//Da aggiornare
 void printNode(ASTNode * node){
     if(node->getType() == NodeType::Number) {
         NumberNode * numero = static_cast<NumberNode*>(node);
@@ -144,8 +145,20 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
         leftOperand= new NumberNode(token);
         pos++;
     } else if(isFunction(token)){
+        if(token!="text"){
         leftOperand = parseFunction(tokens, pos);
-        //pos++;
+        } else { //caso funzione text()
+        int openParenthesisCount = 1;
+        pos +=2;
+        std::string content;
+        while (pos < tokens.size() && openParenthesisCount>0) {
+            if(tokens[pos] == "(") openParenthesisCount++;
+            else if(tokens[pos] == ")") openParenthesisCount--;
+            else content+=tokens[pos];
+            pos++;
+        }
+        leftOperand = new FreeTextNode("text", content);
+        }
     } else if(isPolynomial(token)){
         leftOperand = new PolynomialNode(token);
         pos++;
@@ -154,7 +167,8 @@ ASTNode* parseTokens(std::vector<std::string> tokens, size_t& pos){
         pos++;
     }
 
-    while (pos < tokens.size() && isOperator(tokens[pos]))
+
+    while (pos < tokens.size() && (isOperator(tokens[pos]) || isLineBreak(tokens[pos])))
     {
         std::string op = tokens[pos];
         ASTNode * rightOperand = parseTokens(tokens, ++pos);

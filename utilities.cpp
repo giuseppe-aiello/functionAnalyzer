@@ -13,21 +13,26 @@ bool isOperator(std::string val)
     else return false;
 }
 
-bool isFunction(std::string val)
-{
-    if(val == "sin" || val == "sqrt" || val == "cos" || val == "square" || val == "frac") return true;
+bool isFunction(std::string val){
+    if(val == "pow" || val == "sqrt" || val == "cos" || val == "square" || val == "frac" || val == "text") return true;
     else return false;
 }
 
-bool isNumber(std::string val)
-{
+bool isNumber(std::string val){
     return !val.empty() && std::all_of(val.begin(), val.end(), ::isdigit);
 }
 
 bool isPolynomial(std::string val){
-    std::regex polyPattern(R"((\d+x\^\d+)|([0-9]*)x)");
+    std::regex polyPattern(R"(\d*[a-z]\^?\d*)");
     
     if(!std::regex_match(val, polyPattern)){
         return false;
     } else return true;
+}
+
+
+bool isLineBreak(std::string val)
+{
+    if(val == "#") return true;
+    else return false;
 }

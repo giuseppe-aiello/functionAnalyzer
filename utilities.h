@@ -17,4 +17,7 @@ bool isFunction(std::string val);
 bool isNumber(std::string val);
 
 bool isPolynomial(std::string val);
+
+bool isLineBreak(std::string val);
+
 #endif

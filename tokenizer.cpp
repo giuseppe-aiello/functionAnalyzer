@@ -21,6 +21,14 @@ std::vector<std::string> tokenizeExpression(const std::string& expression){
                 currentToken.clear();
             }
             tokens.push_back(std::string(1, ch));
+        }else if(ch == '#'){
+            //i++;
+            //currentToken+=expression[i];
+            if(!currentToken.empty()){
+                tokens.push_back(currentToken);
+                currentToken.clear();
+            }
+            tokens.push_back(std::string(1, ch));
         }else{
             //CASO operandi e funzioni
             currentToken += ch; //Costruisce token per operandi e funzioni

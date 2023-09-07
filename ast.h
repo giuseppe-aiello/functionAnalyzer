@@ -8,7 +8,8 @@ enum class NodeType {
     BinaryOperator,
     Function,
     Polynomial,
-    GenericString
+    GenericString,
+    FreeText
 };
 
 // Struttura Nodo
@@ -39,7 +40,9 @@ public:
 
     ~BinaryOperatorNode() override {
         delete left;
+        left = nullptr;
         delete right;
+        right = nullptr;
     }
 
     NodeType getType() const override {return NodeType::BinaryOperator; }
@@ -111,6 +114,37 @@ private:
 
 };
 
+class FreeTextNode : public ASTNode {
+public:
+    FreeTextNode(std::string name, std::string content) : function(name), text(content){}
+    ~FreeTextNode() override {}
+
+    NodeType getType() const override {return NodeType::FreeText; }
+
+    std::string getFunctionName() const {return function;}
+    std::string getText() const {return text;}
+
+private:
+    std::string function;
+    std::string text;
+
+};
+
+/*
+class LineBreakNode : public ASTNode {
+public:
+    LineBreakNode(std::string value) : value(value) {}
+    ~LineBreakNode() override {}
+
+    NodeType getType() const override {return NodeType::LineBreak; }
+
+    std::string getValue() const {return value;}
+
+private:
+    std::string value;
+
+};*/
+
 void printNode(ASTNode * node);
 
 //Struttura Abstract Syntax Tree
@@ -120,6 +154,7 @@ public:
     AST() : root(nullptr) {}
     ~AST() {
         delete root;
+        root = nullptr;
     }
    
     void aggiungiNodo(ASTNode * node){
