@@ -14,7 +14,7 @@ bool isOperator(std::string val)
 }
 
 bool isFunction(std::string val){
-    if(val == "pow" || val == "sqrt" || val == "cos" || val == "square" || val == "frac" || val == "text") return true;
+    if(val == "pow" || val == "sqrt" || val == "cos" || val == "square" || val == "frac" || val == "text" || val == "sin") return true;
     else return false;
 }
 
